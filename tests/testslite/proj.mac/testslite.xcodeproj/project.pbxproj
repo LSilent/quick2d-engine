@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E46406F1CCE68A3004BE8F3 /* main.lua in Resources */ = {isa = PBXBuildFile; fileRef = 4E46406B1CCE68A3004BE8F3 /* main.lua */; };
+		4E4640701CCE68A3004BE8F3 /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E46406C1CCE68A3004BE8F3 /* star.png */; };
 		4E59A65D1CC8A6430081B5D1 /* AppDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4E59A6591CC8A6430081B5D1 /* AppDelegate.cpp */; };
 		4E59A65E1CC8A6430081B5D1 /* HelloWorldScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4E59A65B1CC8A6430081B5D1 /* HelloWorldScene.cpp */; };
 		4E59A6611CC8A65B0081B5D1 /* HelloWorld.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E59A6601CC8A65B0081B5D1 /* HelloWorld.png */; };
@@ -36,6 +38,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4E46406B1CCE68A3004BE8F3 /* main.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.lua; sourceTree = "<group>"; };
+		4E46406C1CCE68A3004BE8F3 /* star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star.png; sourceTree = "<group>"; };
 		4E59A6361CC8A5880081B5D1 /* testslite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testslite.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E59A6511CC8A61A0081B5D1 /* libcocos2dxlite.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libcocos2dxlite.xcodeproj; path = ../../../proj.mac/libcocos2dxlite.xcodeproj; sourceTree = "<group>"; };
 		4E59A6591CC8A6430081B5D1 /* AppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppDelegate.cpp; sourceTree = "<group>"; };
@@ -127,6 +131,8 @@
 			isa = PBXGroup;
 			children = (
 				4E59A6601CC8A65B0081B5D1 /* HelloWorld.png */,
+				4E46406B1CCE68A3004BE8F3 /* main.lua */,
+				4E46406C1CCE68A3004BE8F3 /* star.png */,
 			);
 			name = Resources;
 			path = ../Resources;
@@ -172,6 +178,7 @@
 			buildPhases = (
 				4E59A6321CC8A5880081B5D1 /* Sources */,
 				4E59A6331CC8A5880081B5D1 /* Frameworks */,
+				4E4640721CCE694E004BE8F3 /* ShellScript */,
 				4E59A6341CC8A5880081B5D1 /* Resources */,
 			);
 			buildRules = (
@@ -237,12 +244,30 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E59A6611CC8A65B0081B5D1 /* HelloWorld.png in Resources */,
+				4E46406F1CCE68A3004BE8F3 /* main.lua in Resources */,
 				4E59A6661CC8A6A80081B5D1 /* Icon.icns in Resources */,
 				4E59A6691CC8A6CF0081B5D1 /* Info.plist in Resources */,
+				4E4640701CCE68A3004BE8F3 /* star.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4E4640721CCE694E004BE8F3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "touch /Users/koala/Desktop/Works/cocos/quick2d/tests/testslite/Resources/main.lua";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4E59A6321CC8A5880081B5D1 /* Sources */ = {
@@ -343,24 +368,34 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"COCOS2D_DEBUG=1",
 					USE_FILE32API,
 					CC_TARGET_OS_MAC,
+					KAGUYA_USE_CPP11,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../../../external/mac/libs\"";
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../../../external/mac/libs\"",
+					"\"$(SRCROOT)/../../../lua-support/luajit/prebuilt/mac\"",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-std=c++1y",
 				);
+				OTHER_LDFLAGS = (
+					"-pagezero_size",
+					10000,
+					"-image_base",
+					100000000,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = cocos2dx.testlite;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../../cocos\" \"$(SRCROOT)/../../../external/mac/include\" \"$(SRCROOT)/../../../external/mac/include/freetype\" \"$(SRCROOT)/../../../external/sources\" \"$(SRCROOT)/../../../lua-support\" \"$(SRCROOT)/../../../lua-support/lua-src\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../../cocos\" \"$(SRCROOT)/../../../external/mac/include\" \"$(SRCROOT)/../../../external/mac/include/freetype\" \"$(SRCROOT)/../../../external/sources\" \"$(SRCROOT)/../../../lua-support\" \"$(SRCROOT)/../../../lua-support/luajit/include\"";
 			};
 			name = Debug;
 		};
@@ -368,24 +403,34 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"COCOS2D_DEBUG=0",
 					USE_FILE32API,
 					CC_TARGET_OS_MAC,
+					KAGUYA_USE_CPP11,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../../../external/mac/libs\"";
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../../../external/mac/libs\"",
+					"\"$(SRCROOT)/../../../lua-support/luajit/prebuilt/mac\"",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-std=c++1y",
 				);
+				OTHER_LDFLAGS = (
+					"-pagezero_size",
+					10000,
+					"-image_base",
+					100000000,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = cocos2dx.testlite;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../../cocos\" \"$(SRCROOT)/../../../external/mac/include\" \"$(SRCROOT)/../../../external/mac/include/freetype\" \"$(SRCROOT)/../../../external/sources\" \"$(SRCROOT)/../../../lua-support\" \"$(SRCROOT)/../../../lua-support/lua-src\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../../cocos\" \"$(SRCROOT)/../../../external/mac/include\" \"$(SRCROOT)/../../../external/mac/include/freetype\" \"$(SRCROOT)/../../../external/sources\" \"$(SRCROOT)/../../../lua-support\" \"$(SRCROOT)/../../../lua-support/luajit/include\"";
 			};
 			name = Release;
 		};

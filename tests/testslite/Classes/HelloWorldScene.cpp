@@ -1,8 +1,19 @@
 
 #include "HelloWorldScene.h"
-#include "sol.hpp"
+#include "kaguya/kaguya.hpp"
 
 USING_NS_CC;
+
+class A {
+public:
+    static void say(int v) {
+        printf("v = %d\n", v);
+    };
+};
+
+class B: public A {
+};
+
 
 Scene* HelloWorld::createScene()
 {
@@ -28,57 +39,105 @@ bool HelloWorld::init()
         return false;
     }
 
-    Size size = Director::getInstance()->getOpenGLView()->getFrameSize();
+    kaguya::State lua;
+    lua.openlibs();
 
-    auto label = Label::createWithSystemFont("Hello World", "sans", 24);
-    label->setAlignment(TextHAlignment::CENTER);
-    label->setVerticalAlignment(TextVAlignment::CENTER);
+    // open namespace "cc"
+    auto cc = lua["cc"] = lua.newTable();
 
-    // position the label on the center of the screen
-    label->setPosition(Vec2(size.width / 2, size.height / 2));
+    cc["Ref"]
+    .setClass(kaguya::ClassMetatable<Ref>()
+              .addMemberFunction("retain", &Ref::retain)
+              .addMemberFunction("release", &Ref::release)
+              .addMemberFunction("getReferenceCount", &Ref::getReferenceCount));
 
-    // add the label as a child to this layer
-    this->addChild(label, 1);
+    cc["Scheduler"]
+    .setClass(kaguya::ClassMetatable<Scheduler, Ref>());
 
-    sol::state lua;
-    lua.open_libraries(sol::lib::base, sol::lib::math);
+    cc["Director"]
+    .setClass(kaguya::ClassMetatable<Director, Ref>()
+              .addStaticFunction("getInstance", &Director::getInstance)
+              .addMemberFunction("endDirector", &Director::end)
+              .addMemberFunction("getScheduler", &Director::getScheduler));
 
-    lua.new_usertype<HelloWorld>("HelloWorld",
-                                 "addChild", sol::resolve<void(Node*)>(&Layer::addChild)
-                                 );
+    cc["Node"]
+    .setClass(kaguya::ClassMetatable<Node, Ref>()
+              .addStaticFunction("create", &Node::create)
+              .addMemberFunction("addChild", static_cast<void(Node::*)(Node*)>(&Node::addChild))
+              .addMemberFunction("addChild", static_cast<void(Node::*)(Node*, int)>(&Node::addChild))
+              .addMemberFunction("addChild", static_cast<void(Node::*)(Node*, int, int)>(&Node::addChild))
+              .addMemberFunction("addChild", static_cast<void(Node::*)(Node*, int, const std::string&)>(&Node::addChild))
+              .addMemberFunction("removeChild", &Node::removeChild)
+              .addMemberFunction("setPosition", static_cast<void(Node::*)(const Vec2&)>(&Node::setPosition))
+              .addMemberFunction("setPosition", static_cast<void(Node::*)(float, float)>(&Node::setPosition))
+              .addMemberFunction("setColor", &Node::setColor)
+              .addMemberFunction("setOpacity", &Node::setOpacity)
+              .addMemberFunction("schedule", static_cast<void(Node::*)(const std::function<void(float)>&, float, const std::string &)>(&Node::schedule)));
 
-    // Node
-    {
-        lua.new_usertype<Node>("Node");
-    }
+    cc["Sprite"]
+    .setClass(kaguya::ClassMetatable<Sprite, Node>()
+              .addStaticFunction("create", static_cast<Sprite*(*)()>(&Sprite::create))
+              .addStaticFunction("create", static_cast<Sprite*(*)(const std::string&)>(&Sprite::create)));
 
-    // Sprite
-    {
-        auto create = sol::overload(sol::resolve<Sprite*()>(&Sprite::create),
-                                    sol::resolve<Sprite*(const std::string&)>(&Sprite::create));
+    cc["Layer"]
+    .setClass(kaguya::ClassMetatable<Layer, Node>());
 
-        auto setPosition = sol::overload(sol::resolve<void(const Vec2&)>(&Sprite::setPosition),
-                                         sol::resolve<void(float, float)>(&Sprite::setPosition));
+    cc["LayerColor"]
+    .setClass(kaguya::ClassMetatable<LayerColor, Layer>()
+              .addStaticFunction("create", static_cast<LayerColor*(*)()>(&LayerColor::create))
+              .addStaticFunction("create", static_cast<LayerColor*(*)(const Color4B&, GLfloat, GLfloat)>(&LayerColor::create))
+              .addStaticFunction("create", static_cast<LayerColor*(*)(const Color4B&)>(&LayerColor::create)));
 
-        lua.new_usertype<Sprite>("Sprite",
-                                 "create", create,
-                                 "createWithFilename", sol::resolve<Sprite*(const std::string&)>(&Sprite::create),
-                                 "setPosition", setPosition,
-                                 sol::base_classes, sol::bases<Node>()
-                                 );
-    }
+    cc["Label"]
+    .setClass(kaguya::ClassMetatable<Label, Node>()
+              .addStaticFunction("create", &Label::create)
+              .addStaticFunction("createWithSystemFont", [](const std::string& text, const std::string& font, float fontSize) -> Label* {
+        return Label::createWithSystemFont(text, font, fontSize);
+    })
+              .addMemberFunction("setString", &Label::setString));
 
-    // Vec2
-    {
-        sol::constructors<sol::types<>, sol::types<float, float>> ctor;
-        lua.new_usertype<Vec2>("Vec2",
-                               ctor,
-                               "x", &Vec2::x,
-                               "y", &Vec2::y);
-    }
+    cc["HelloWorld"]
+    .setClass(kaguya::ClassMetatable<HelloWorld, Layer>());
 
-    lua["layer"] = this;
-    lua.script("local s2 = Sprite.create(); local sprite = Sprite.createWithFilename('HelloWorld.png'); local pos = Vec2.new(480, 320); sprite:setPosition(pos); layer:addChild(sprite); sprite:setPosition(100, 100);");
+
+    cc["Vec2"]
+    .setClass(kaguya::ClassMetatable<Vec2>()
+              .addConstructor<float, float>()
+              .addConstructor<const Vec2&>()
+              .addProperty("x", &Vec2::x)
+              .addProperty("y", &Vec2::y));
+
+    cc["Size"]
+    .setClass(kaguya::ClassMetatable<Size>()
+              .addConstructor<float, float>()
+              .addConstructor<const Size&>()
+              .addProperty("width", &Size::width)
+              .addProperty("height", &Size::height));
+
+    cc["Color4B"]
+    .setClass(kaguya::ClassMetatable<Color4B>()
+              .addConstructor()
+              .addConstructor<GLubyte, GLubyte, GLubyte, GLubyte>()
+              .addConstructor<const Color3B&, GLubyte>()
+              .addConstructor<const Color3B&>()
+              .addProperty("r", &Color4B::r)
+              .addProperty("g", &Color4B::g)
+              .addProperty("b", &Color4B::b)
+              .addProperty("a", &Color4B::a));
+
+    cc["Color3B"]
+    .setClass(kaguya::ClassMetatable<Color3B>()
+              .addConstructor()
+              .addConstructor<GLubyte, GLubyte, GLubyte>()
+              .addConstructor<const Color3B&>()
+              .addConstructor<const Color4B&>()
+              .addProperty("r", &Color3B::r)
+              .addProperty("g", &Color3B::g)
+              .addProperty("b", &Color3B::b));
+
+    lua["g_viewsize"] = Director::getInstance()->getOpenGLView()->getFrameSize();
+    lua["g_layer"] = this;
+    lua.dofile("main.lua");
 
     return true;
 }
