@@ -1,37 +1,18 @@
 
-#include "HelloWorldScene.h"
+#include "BenchmarkLuaScene.h"
+#include "WelcomeScene.h"
 #include "kaguya/kaguya.hpp"
 
 USING_NS_CC;
 
-class A {
-public:
-    static void say(int v) {
-        printf("v = %d\n", v);
-    };
-};
-
-class B: public A {
-};
-
-
-Scene* HelloWorld::createScene()
+Scene* BenchmarkLua::createScene()
 {
-    // 'scene' is an autorelease object
     auto scene = Scene::create();
-
-    // 'layer' is an autorelease object
-    auto layer = HelloWorld::create();
-
-    // add layer as a child to scene
-    scene->addChild(layer);
-
-    // return the scene
+    scene->addChild(BenchmarkLua::create());
     return scene;
 }
 
-// on "init" you need to initialize your instance
-bool HelloWorld::init()
+bool BenchmarkLua::init()
 {
     //////////////////////////////
     // 1. super init first
@@ -39,11 +20,16 @@ bool HelloWorld::init()
         return false;
     }
 
-    kaguya::State lua;
-    lua.openlibs();
+    auto menu = Menu::create();
+    menu->addChild(MenuItemLabel::create(Label::createWithSystemFont("Back to Main Menu", "sans", 32), [](Ref*) {
+        Director::getInstance()->replaceScene(Welcome::createScene());
+    }));
+    menu->alignItemsVertically();
+    this->addChild(menu, 99999);
 
-    // open namespace "cc"
-    auto cc = lua["cc"] = lua.newTable();
+    // add luabinding
+    _lua.openlibs();
+    auto cc = _lua["cc"] = _lua.newTable();
 
     cc["Ref"]
     .setClass(kaguya::ClassMetatable<Ref>()
@@ -97,7 +83,7 @@ bool HelloWorld::init()
               .addMemberFunction("setString", &Label::setString));
 
     cc["HelloWorld"]
-    .setClass(kaguya::ClassMetatable<HelloWorld, Layer>());
+    .setClass(kaguya::ClassMetatable<BenchmarkLua, Layer>());
 
 
     cc["Vec2"]
@@ -135,9 +121,12 @@ bool HelloWorld::init()
               .addProperty("g", &Color3B::g)
               .addProperty("b", &Color3B::b));
 
-    lua["g_viewsize"] = Director::getInstance()->getOpenGLView()->getFrameSize();
-    lua["g_layer"] = this;
-    lua.dofile("main.lua");
+    _lua["g_viewsize"] = Director::getInstance()->getOpenGLView()->getFrameSize();
+    _lua["g_layer"] = this;
+
+    const std::string path = FileUtils::getInstance()->fullPathForFilename("main.lua");
+
+    _lua.dofile(path);
 
     return true;
 }

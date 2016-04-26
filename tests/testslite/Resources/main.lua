@@ -23,14 +23,14 @@ function HelloWorldLayer:ctor(parent)
     self.starsLayer = cc.Node.create()
     self.parent:addChild(self.starsLayer)
 
-    local layer = cc.LayerColor.create(cc.Color4B.new(200, 200, 200, 200), 200, 40)
-    layer:setPosition(centerx - 100, centery - 40)
-    self.parent:addChild(layer)
+    local layerColor = cc.LayerColor.create(cc.Color4B.new(200, 200, 200, 200), 200, 40)
+    layerColor:setPosition(centerx - 100, g_viewsize.height - 40)
+    self.parent:addChild(layerColor)
 
     self.starsLabel = cc.Label.createWithSystemFont("0 stars", "sans", 24)
     self.starsLabel:setColor(cc.Color3B.new(0, 0, 0))
     self.starsLabel:setPosition(100, 20)
-    layer:addChild(self.starsLabel)
+    layerColor:addChild(self.starsLabel)
 
     self.offsetCount = 60
     self.offsets = {}
@@ -41,8 +41,8 @@ function HelloWorldLayer:ctor(parent)
         }
     end
 
-    self.maxStars = 8000
-    self.starsCountOffset = 500
+    self.maxStars = 10000
+    self.starsCountOffset = 100
     self.stars = {}
     self.stepsCount = 120
     self.steps = self.stepsCount
