@@ -1,4 +1,4 @@
-# quick2d - The best of Game Engine for 2D Games
+# quick2d - The 2D Game Engine based on cocos2d-x
 
 
 It is based on [cocos2d-x](https://github.com/cocos2d/cocos2d-x)[version 3.9], but remove 3D and other features. It works on iOS,OS X,Android and Windows. 
