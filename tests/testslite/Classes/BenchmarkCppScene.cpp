@@ -48,7 +48,7 @@ bool BenchmarkCpp::init()
                                 cosf(i * 6.0f * M_PI / 180.0f) * 4.0f));
     }
 
-    _maxStars = 20000;
+    _maxStars = 30000;
     _starsCountOffset = 1000;
     _steps = _stepsCount = 180;
 
@@ -126,6 +126,6 @@ void BenchmarkCpp::_updateStar(Star &star)
         star.opacityOffset = -star.opacityOffset;
     }
 
-    star.sprite->setPosition(star.pos + _offsets[index]);
-    star.sprite->setOpacity(star.opacity);
+//    star.sprite->setPosition(star.pos + _offsets[index]);
+//    star.sprite->setOpacity(star.opacity);
 }

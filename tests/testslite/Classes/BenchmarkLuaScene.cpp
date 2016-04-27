@@ -2,6 +2,7 @@
 #include "BenchmarkLuaScene.h"
 #include "WelcomeScene.h"
 #include "kaguya/kaguya.hpp"
+#include "lua.hpp"
 
 USING_NS_CC;
 
@@ -10,6 +11,31 @@ Scene* BenchmarkLua::createScene()
     auto scene = Scene::create();
     scene->addChild(BenchmarkLua::create());
     return scene;
+}
+
+static int lgetNode(lua_State *L)
+{
+    // node
+    kaguya::ObjectPointerWrapper<Sprite*> *wrap = static_cast<kaguya::ObjectPointerWrapper<Sprite*>*>(lua_touserdata(L, -1));
+    Node *node = static_cast<Node*>(wrap->get());
+    lua_pushlightuserdata(L, node);
+    return 1;
+}
+
+static int lsetPosition(lua_State *L)
+{
+    // node, x, y
+    Node *node = static_cast<Node*>(lua_touserdata(L, -3));
+    node->setPosition(lua_tonumber(L, -2), lua_tonumber(L, -1));
+    return 0;
+}
+
+static int lsetOpacity(lua_State *L)
+{
+    // node, opacity
+    Node *node = static_cast<Node*>(lua_touserdata(L, -2));
+    node->setOpacity(lua_tointeger(L, -1));
+    return 0;
 }
 
 bool BenchmarkLua::init()
@@ -123,6 +149,17 @@ bool BenchmarkLua::init()
 
     _lua["g_viewsize"] = Director::getInstance()->getOpenGLView()->getFrameSize();
     _lua["g_layer"] = this;
+
+    lua_State *L = _lua.state();
+
+    lua_pushcfunction(L, &lgetNode);
+    lua_setglobal(L, "lgetNode");
+
+    lua_pushcfunction(L, &lsetPosition);
+    lua_setglobal(L, "lsetPosition");
+
+    lua_pushcfunction(L, &lsetOpacity);
+    lua_setglobal(L, "lsetOpacity");
 
     const std::string path = FileUtils::getInstance()->fullPathForFilename("main.lua");
 

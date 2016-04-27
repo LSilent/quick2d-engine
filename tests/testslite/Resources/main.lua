@@ -41,14 +41,16 @@ function HelloWorldLayer:ctor(parent)
         }
     end
 
-    self.maxStars = 10000
+    self.maxStars = 20000
     self.starsCountOffset = 100
     self.stars = {}
-    self.stepsCount = 120
+    self.stepsCount = 300
     self.steps = self.stepsCount
     self.starsLayer:schedule(function(dt)
         self:update(dt)
     end, 1.0 / 60, "update")
+
+    self:addStars(7500)
 end
 
 function HelloWorldLayer:addStars(count)
@@ -56,6 +58,7 @@ function HelloWorldLayer:addStars(count)
         local star = {}
 
         star.sprite = cc.Sprite.create("star.png")
+        star.node = lgetNode(star.sprite)
         star.pos = {
             x = math.random() * g_viewsize.width,
             y = math.random() * g_viewsize.height,
@@ -100,15 +103,21 @@ function HelloWorldLayer:update(dt)
         self.starsLabel:setString(tostring(#self.stars) .. " stars")
     end
 
+    local updateStar = self.updateStar
     for i = 1, #self.stars do
-        self:updateStar(self.stars[i])
+        updateStar(self, self.stars[i])
     end
 end
 
+local lsetPosition = lsetPosition
+local lsetOpacity = lsetOpacity
+
+local pos, offset, offsetCount, node
+
 function HelloWorldLayer:updateStar(star)
-    local pos = star.pos
-    local offset = self.offsets[pos.i]
-    local offsetCount = self.offsetCount
+    pos = star.pos
+    offset = self.offsets[pos.i]
+    offsetCount = self.offsetCount
 
     pos.i = pos.i + 1
     pos.i = pos.i % offsetCount
@@ -121,9 +130,16 @@ function HelloWorldLayer:updateStar(star)
         pos.oi = -pos.oi
     end
 
-    star.sprite:setPosition(pos.x + offset.x, pos.y + offset.y)
-    star.sprite:setOpacity(pos.o)
+    node = star.node
+
+    lsetPosition(node, pos.x + offset.x, pos.y + offset.y)
+    lsetOpacity(node, pos.o)
+
+    -- star.sprite:setPosition(pos.x + offset.x, pos.y + offset.y)
+    -- star.sprite:setOpacity(pos.o)
 end
+
+collectgarbage("stop")
 
 local layer = {}
 setmetatable(layer, {__index = HelloWorldLayer})
