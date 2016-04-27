@@ -473,7 +473,7 @@
 					"\"$(SRCROOT)/../../../external/ios/libs\"",
 					"\"$(SRCROOT)/../../../lua-support/luajit/prebuilt/ios\"",
 				);
-				OTHER_LDFLAGS = (
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=x86_64]" = (
 					"-pagezero_size",
 					10000,
 					"-image_base",
@@ -502,7 +502,7 @@
 					"\"$(SRCROOT)/../../../external/ios/libs\"",
 					"\"$(SRCROOT)/../../../lua-support/luajit/prebuilt/ios\"",
 				);
-				OTHER_LDFLAGS = (
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=x86_64]" = (
 					"-pagezero_size",
 					10000,
 					"-image_base",

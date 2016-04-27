@@ -126,6 +126,6 @@ void BenchmarkCpp::_updateStar(Star &star)
         star.opacityOffset = -star.opacityOffset;
     }
 
-//    star.sprite->setPosition(star.pos + _offsets[index]);
-//    star.sprite->setOpacity(star.opacity);
+    star.sprite->setPosition(star.pos + _offsets[index]);
+    star.sprite->setOpacity(star.opacity);
 }
