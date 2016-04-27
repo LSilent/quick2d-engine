@@ -1,6 +1,14 @@
 .*
 .so
 Thumbs.db
+
+# external
+external/
+
+# xcode
 xcuserdata/
 project.xcworkspace/
+
+# java
+project.properties
 
