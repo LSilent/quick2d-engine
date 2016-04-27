@@ -1,5 +1,6 @@
-# quick2d - The 2D Game Engine based on cocos2d-x
+# quick2d - The 2D Game Engine
 
+### QQ Gorup: <315146510>
 
 It is based on [cocos2d-x](https://github.com/cocos2d/cocos2d-x)[version 3.9], but remove 3D and other features. It works on iOS,OS X,Android and Windows. 
 
