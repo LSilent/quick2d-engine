@@ -25,6 +25,10 @@ local function main()
     local centerx = g_viewsize_width / 2
     local centery = g_viewsize_height / 2
 
+    -- cache C++ methods
+    local setPosition = cc.Node.setPosition
+    local setOpacity = cc.Node.setOpacity
+
     function HelloWorldLayer:ctor(parent)
         self.parent = parent
         self.starsLayer = cc.Node.create()
@@ -51,13 +55,13 @@ local function main()
         self.maxStars = 20000
         self.starsCountOffset = 100
         self.stars = {}
-        self.stepsCount = 300
+        self.stepsCount = 3000
         self.steps = self.stepsCount
-        self.starsLayer:schedule(function(dt)
+        self.starsLayer:scheduleUpdate(function(dt)
             self:update(dt)
-        end, 1.0 / 60, "update")
+        end)
 
-        self:addStars(7500)
+        self:addStars(7900)
     end
 
     function HelloWorldLayer:addStars(count)
@@ -118,7 +122,7 @@ local function main()
     local lsetPosition = lsetPosition
     local lsetOpacity = lsetOpacity
 
-    local pos, offset, offsetCount, node
+    local pos, offset, offsetCount, sprite
 
     function HelloWorldLayer:updateStar(star)
         pos = star.pos
@@ -136,8 +140,9 @@ local function main()
             pos.oi = -pos.oi
         end
 
-        star.sprite:setPosition(pos.x + offset.x, pos.y + offset.y)
-        star.sprite:setOpacity(pos.o)
+        sprite = star.sprite
+        setPosition(sprite, pos.x + offset.x, pos.y + offset.y)
+        setOpacity(sprite, pos.o)
     end
 
     collectgarbage("stop")

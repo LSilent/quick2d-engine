@@ -47,12 +47,38 @@ static int l_set_base_class(lua_State *L, const char *name, const char *basename
     assert(lua_type(L, -1) == LUA_TTABLE);
     lua_getfield(L, -1, "__index");             // L: cls __index
     assert(lua_type(L, -1) == LUA_TTABLE);
-    lua_newtable(L);                            // L: cls __index mt
-    l_get_class(L, basename);                   // L: cls __index mt basecls
+
+    // copy members from base to cls, if member not exists in cls
+    l_get_class(L, basename);                   // L: cls __index base
     assert(lua_type(L, -1) == LUA_TTABLE);
-    lua_setfield(L, -2, "__index");             // L: cls __index
-    lua_setmetatable(L, -2);                    // L: cls
-    lua_pop(L, 1);
+    lua_getfield(L, -1, "__index");             // L: cls __index base __bindex
+    assert(lua_type(L, -1) == LUA_TTABLE);
+
+    lua_pushnil(L);                             // L: cls __index base __bindex nil
+    while(lua_next(L, -2)) {                    // L: cls __index base __bindex key member
+        lua_pushvalue(L, -2);                   // L: cls __index base __bindex key member key
+        lua_rawget(L, -6);                      // L: cls __index base __bindex key member m
+
+        if (lua_isnil(L, -1)) {
+            lua_pop(L, 1);                      // L: cls __index base __bindex key member
+            lua_pushvalue(L, -2);               // L: cls __index base __bindex key member key
+            lua_pushvalue(L, -2);               // L: cls __index base __bindex key member key member
+            lua_rawset(L, -7);                  // L: cls __index base __bindex key member
+            lua_pop(L, 1);                      // L: cls __index base __bindex key
+        } else {
+            lua_pop(L, 2);                      // L: cls __index base __bindex key
+        }
+    }                                           // L: cls __index base __bindex
+
+    lua_pop(L, 1);                              // L: cls __index base
+
+    // setmetatable(cls.__index, {__index = base})
+    lua_newtable(L);                            // L: cls __index base mt
+    lua_insert(L, -2);                          // L: cls __index mt base
+    lua_setfield(L, -2, "__index");             // L: cls __index mt
+    lua_setmetatable(L, -2);                    // L: cls __index
+
+    lua_pop(L, 2);
     return 0;
 }
 
@@ -176,15 +202,20 @@ static int l_Node_setColor(lua_State *L)
 
 static int l_Node_setOpacity(lua_State *L)
 {
-    // node, opacity
     Node *node = static_cast<Node*>(l_to_userdata(L, 1));
     node->setOpacity(lua_tointeger(L, 2));
     return 0;
 }
 
-static int l_Node_schedule(lua_State *L)
+static int l_Node_scheduleUpdate(lua_State *L)
 {
-
+    Node *node = static_cast<Node*>(l_to_userdata(L, 1));
+    int ref = luaL_ref(L, LUA_REGISTRYINDEX);
+    node->schedule([L, ref](float dt) {
+        lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
+        lua_pushnumber(L, dt);
+        lua_call(L, 1, 0);
+    }, 1.0f / 60.0f, "update");
     return 0;
 }
 
@@ -210,8 +241,8 @@ static int l_create_class_Node(lua_State *L)
     lua_pushcfunction(L, l_Node_setOpacity);
     lua_setfield(L, -2, "setOpacity");
 
-    lua_pushcfunction(L, l_Node_schedule);
-    lua_setfield(L, -2, "schedule");
+    lua_pushcfunction(L, l_Node_scheduleUpdate);
+    lua_setfield(L, -2, "scheduleUpdate");
 
     return 1;
 }
@@ -891,11 +922,6 @@ int l_push_userdata(lua_State *L, void *p, const char *name)
 
 void *l_to_userdata(lua_State *L, int idx)
 {
-    void *ud = lua_touserdata(L, idx);
-    if (ud) {
-        void *p;
-        memcpy(&p, ud, sizeof(p));
-        return p;
-    }
-    return NULL;
+    void **ud = static_cast<void**>(lua_touserdata(L, idx));
+    return ud ? *ud : NULL;
 }
