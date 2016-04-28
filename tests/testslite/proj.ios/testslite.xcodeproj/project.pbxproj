@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E3E698B1CD1A29E009D5F20 /* Luabinding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4E3E69891CD1A29E009D5F20 /* Luabinding.cpp */; };
 		4E6D8E751CCF994A00E5E971 /* main.lua in Resources */ = {isa = PBXBuildFile; fileRef = 4E6D8E731CCF994A00E5E971 /* main.lua */; };
 		4E6D8E761CCF994A00E5E971 /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E6D8E741CCF994A00E5E971 /* star.png */; };
 		4E6D8E931CCF9C5900E5E971 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E6D8E7E1CCF9C5900E5E971 /* Default-568h@2x.png */; };
@@ -60,6 +61,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4E3E69891CD1A29E009D5F20 /* Luabinding.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Luabinding.cpp; sourceTree = "<group>"; };
+		4E3E698A1CD1A29E009D5F20 /* Luabinding.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Luabinding.hpp; sourceTree = "<group>"; };
 		4E6D8E731CCF994A00E5E971 /* main.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.lua; sourceTree = "<group>"; };
 		4E6D8E741CCF994A00E5E971 /* star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star.png; sourceTree = "<group>"; };
 		4E6D8E7E1CCF9C5900E5E971 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
@@ -202,6 +205,8 @@
 				4E6D8EA91CCFA09900E5E971 /* BenchmarkCppScene.h */,
 				4EE905481CC8BC6C00252D4E /* BenchmarkLuaScene.cpp */,
 				4EE905491CC8BC6C00252D4E /* BenchmarkLuaScene.h */,
+				4E3E69891CD1A29E009D5F20 /* Luabinding.cpp */,
+				4E3E698A1CD1A29E009D5F20 /* Luabinding.hpp */,
 				4E6D8EAB1CCFA0B900E5E971 /* WelcomeScene.cpp */,
 				4E6D8EAC1CCFA0B900E5E971 /* WelcomeScene.h */,
 			);
@@ -363,6 +368,7 @@
 				4EE9054B1CC8BC6C00252D4E /* BenchmarkLuaScene.cpp in Sources */,
 				4EE9054A1CC8BC6C00252D4E /* AppDelegate.cpp in Sources */,
 				4EE9054D1CC8BC8600252D4E /* main.m in Sources */,
+				4E3E698B1CD1A29E009D5F20 /* Luabinding.cpp in Sources */,
 				4E6D8EAA1CCFA09900E5E971 /* BenchmarkCppScene.cpp in Sources */,
 				4E6D8EAD1CCFA0B900E5E971 /* WelcomeScene.cpp in Sources */,
 				4EE9053B1CC8BB4F00252D4E /* AppController.mm in Sources */,
