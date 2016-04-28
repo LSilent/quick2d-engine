@@ -1,6 +1,4 @@
 
-print("hello")
-
 local function main()
 
     local function printf(fmt, ...)
@@ -14,8 +12,13 @@ local function main()
         end
     end
 
-    print("Hello, Lua Main")
-    printf("g_layer = %s", tostring(g_layer))
+    local function dumpClass(cls, name)
+        local mt = getmetatable(cls)
+        dump(mt, name)
+        dump(mt.__index, name)
+        print("")
+        print("")
+    end
 
     local HelloWorldLayer = {}
 
@@ -28,7 +31,7 @@ local function main()
         self.parent:addChild(self.starsLayer)
 
         local layerColor = cc.LayerColor.create(cc.Color4B.new(200, 200, 200, 200), 200, 40)
-        layerColor:setPosition(centerx - 100, g_viewsize_height - 40)
+        layerColor:setPosition(cc.Vec2.new(centerx - 100, g_viewsize_height - 40))
         self.parent:addChild(layerColor)
 
         self.starsLabel = cc.Label.createWithSystemFont("0 stars", "sans", 24)
@@ -62,7 +65,6 @@ local function main()
             local star = {}
 
             star.sprite = cc.Sprite.create("star.png")
-            star.node = lgetNode(star.sprite)
             star.pos = {
                 x = math.random() * g_viewsize_width,
                 y = math.random() * g_viewsize_height,
@@ -133,11 +135,6 @@ local function main()
             pos.o = 0
             pos.oi = -pos.oi
         end
-
-        node = star.node
-
-        -- lsetPosition(node, pos.x + offset.x, pos.y + offset.y)
-        -- lsetOpacity(node, pos.o)
 
         star.sprite:setPosition(pos.x + offset.x, pos.y + offset.y)
         star.sprite:setOpacity(pos.o)

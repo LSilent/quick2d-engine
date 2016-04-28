@@ -15,6 +15,7 @@
 extern "C" {
     int l_create_namespace_cc(lua_State *L);
     int l_push_userdata(lua_State *L, void *p, const char *name);
+    void *l_to_userdata(lua_State *L, int idx);
 }
 
 #endif /* Luabinding_hpp */
